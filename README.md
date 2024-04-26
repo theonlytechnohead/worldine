@@ -24,3 +24,5 @@ Use the `/redoc` path to view a pretty schema of the endpoint
 ## Architecture
 
 The repository is setup as a combined Python-based HTTP endpoint, as well as PostgreSQL database for storing transaction data
+
+The use of FastAPI enables built-in automated endpoint documentation and simple use of HTTP REST-ful requests

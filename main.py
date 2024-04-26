@@ -6,19 +6,22 @@ import uuid
 
 from datetime import datetime
 
+# Fraud suspicion
 FRAUD_AMOUNT_THRESHOLD = 5000  # NZD
 FRAUD_FREQUENCY_THRESHOLD = 10  # more than this per minute is suspicious
 
 def connect():
     database =  psycopg2.connect(
-    database="postgres",
-    host="localhost",
-    user="postgres",
-    password="postgres",
-    port="5432"
-)
+        database="postgres",
+        host="localhost",
+        user="postgres",
+        password="postgres",
+        port="5432"
+    )
     database.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
     return database
+
+
 
 class TransactionData(pydantic.BaseModel):
     payerId: str
@@ -36,6 +39,7 @@ class TransactionData(pydantic.BaseModel):
     bankId: str
     transactionType: str
 
+
 app = FastAPI()
 
 @app.get("/")
@@ -44,9 +48,11 @@ async def transactions():
         cursor.execute("select * from transactions;")
         return cursor.fetchall()
 
+
 @app.post("/")
 async def root(transactionData: TransactionData):
     transactionId = uuid.uuid4()
+    # Fraud checks
     if FRAUD_AMOUNT_THRESHOLD <= transactionData.amount:
         transactionData.status = "PENDING REVIEW"
     else:
@@ -54,6 +60,7 @@ async def root(transactionData: TransactionData):
         # count number
         # arouse suspicion if over threshold
         pass
+    # Commit transaction to database
     with connect().cursor() as cursor:
         cursor.execute(f"""
                        insert into transactions (
