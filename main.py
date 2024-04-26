@@ -1,10 +1,11 @@
-from fastapi import FastAPI
-import pydantic
-import psycopg2
+from fastapi import FastAPI  # webserver
+import psycopg2  # database connection
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
-import uuid
 
+import uuid
 from datetime import datetime
+
+from transaction import TransactionData
 
 # Fraud suspicion
 FRAUD_AMOUNT_THRESHOLD = 5000  # NZD
@@ -20,25 +21,6 @@ def connect():
     )
     database.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
     return database
-
-
-
-class TransactionData(pydantic.BaseModel):
-    payerId: str
-    merchantId: str
-    callbackUrl: str
-    amount: float
-    currency: str
-    description: str
-    merchantUrl: str
-    merchantOrderId: str
-    userAgent: str
-    userIpAddress: str
-    status: str
-    merchantIdCode: int
-    bankId: str
-    transactionType: str
-
 
 app = FastAPI()
 
